@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<cluster>
+ <vertex id="master"/>
+   <vertex id="worker1">
+       <adjacent vertex="master"/>
+   </vertex>
+   <vertex id="worker2">
+       <adjacent vertex="master"/>
+   </vertex>
+    <vertex id="frontend"><adjacent vertex="worker2"/></vertex>
+    <vertex id="order"> 
+        <adjacent vertex="frontend"/>
+        <adjacent vertex="shipping"/>
+        <adjacent vertex="worker1"/>
+    </vertex>
+    <vertex id="payment">
+        <adjacent vertex="frontend"/>  
+        <adjacent vertex="worker1"/>
+    </vertex>
+    <vertex id="cart">
+         <adjacent vertex="frontend"/>
+          <adjacent vertex="worker1"/>
+    </vertex>
+     <vertex id="user">
+         <adjacent vertex="frontend"/>
+         <adjacent vertex="worker1"/>
+    </vertex>
+    <vertex id="catalogue">
+        <adjacent vertex="frontend"/>
+         <adjacent vertex="worker1"/>
+    </vertex>
+     <vertex id="catalogue-db"> 
+        <adjacent vertex="catalogue"/> 
+         <adjacent vertex="worker1"/>
+    </vertex>  
+    <vertex id="order-db"> 
+        <adjacent vertex="order"/> 
+         <adjacent vertex="worker2"/>
+    </vertex> 
+    <vertex id="cart-db"> 
+        <adjacent vertex="cart"/> 
+        <adjacent vertex="worker2"/>
+    </vertex> 
+     <vertex id="shipping">
+         <adjacent vertex="worker1"/>
+         <adjacent vertex="queuemaster2"/>
+    </vertex>
+    <vertex id="queuemaster">
+         <adjacent vertex="worker1"/>
+    </vertex>
+    <vertex id="sessiondb">
+         <adjacent vertex="worker2"/>
+    </vertex>
+       
+</cluster>
