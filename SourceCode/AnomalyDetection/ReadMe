@@ -1,1 +1,5 @@
+SPOT (Streaming Peaks-Over-Threshold):
+The python file spot.py contains 4 classes : SPOT, DSPOT, biSPOT and biDSPOT. The classical algorithms (SPOT and DSPOT) compute only upper threshold although biSPOT and biDSPOT computes upper and lower thresholds.
 
+DATASETS:  Loadtest.csv 
+Example Code for Anomaly detection: TestScript.py
