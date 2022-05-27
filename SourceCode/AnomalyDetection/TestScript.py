@@ -36,8 +36,9 @@ data = P['orders'][u_data].values
 # initial batch
 u_init_data = (P['Time'] == '10/14/2021') | (P['Time'] == '10/20/2021')
 init_data = P['orders'][u_init_data].values
-q = 1e-5  			# risk parameter
-s = bidSPOT(q)  		# bidSPOT object
+q = 1e-5 # risk parameter
+d = 10	# depth
+s = bidSPOT(q,d)  		# bidSPOT object
 s.fit(init_data,data) 	# data import
 s.initialize() 		# initialization step
 results = s.run() 	# run
