@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+<key id="anomaly" for="node" attr.name="anomaly"/>
+<key id="id" for="node" attr.name="id"/>
+<key id="labels" for="node" attr.name="labels"/>
+<key id="causal" for="edge" attr.name="causal"/>
+<key id="label" for="edge" attr.name="label"/>
+<graph id="G" edgedefault="directed">
+<node id="n0" labels=":Node"><data key="labels">:Node</data><data key="id">carts</data><data key="anomaly">true</data></node>
+<node id="n1" labels=":Node"><data key="labels">:Node</data><data key="id">user</data><data key="anomaly">false</data></node>
+<node id="n2" labels=":Node"><data key="labels">:Node</data><data key="id">user-db</data></node>
+<node id="n3" labels=":Node"><data key="labels">:Node</data><data key="id">catalogue</data><data key="anomaly">false</data></node>
+<node id="n4" labels=":Node"><data key="labels">:Node</data><data key="id">catalogue-db</data><data key="anomaly">true</data></node>
+<node id="n5" labels=":Node"><data key="labels">:Node</data><data key="id">orders-db</data><data key="anomaly">true</data></node>
+<node id="n6" labels=":Node"><data key="labels">:Node</data><data key="id">carts-db</data><data key="anomaly">true</data></node>
+<node id="n7" labels=":Node"><data key="labels">:Node</data><data key="id">queue-master</data><data key="anomaly">true</data></node>
+<node id="n8" labels=":Node"><data key="labels">:Node</data><data key="id">rabbitmq</data><data key="anomaly">true</data></node>
+<node id="n9" labels=":Node"><data key="labels">:Node</data><data key="id">session-db</data><data key="anomaly">true</data></node>
+<node id="n17" labels=":Node"><data key="labels">:Node</data><data key="id">master</data></node>
+<node id="n18" labels=":Node"><data key="labels">:Node</data><data key="id">worker1</data></node>
+<node id="n19" labels=":Node"><data key="labels">:Node</data><data key="id">worker2</data></node>
+<node id="n20" labels=":Node"><data key="labels">:Node</data><data key="id">front-end</data><data key="anomaly">true</data></node>
+<node id="n21" labels=":Node"><data key="labels">:Node</data><data key="id">orders</data><data key="anomaly">true</data></node>
+<node id="n22" labels=":Node"><data key="labels">:Node</data><data key="id">shipping</data><data key="anomaly">true</data></node>
+<node id="n23" labels=":Node"><data key="labels">:Node</data><data key="id">payment</data><data key="anomaly">true</data></node>
+<edge id="e0" source="n0" target="n20" label="CONNECTED"><data key="label">CONNECTED</data><data key="causal">false</data></edge>
+<edge id="e1" source="n0" target="n18" label="CONNECTED"><data key="label">CONNECTED</data></edge>
+<edge id="e2" source="n1" target="n20" label="CONNECTED"><data key="label">CONNECTED</data><data key="causal">false</data></edge>
+<edge id="e3" source="n1" target="n18" label="CONNECTED"><data key="label">CONNECTED</data></edge>
+<edge id="e4" source="n1" target="n2" label="CONNECTED"><data key="label">CONNECTED</data><data key="causal">true</data></edge>
+<edge id="e5" source="n2" target="n19" label="CONNECTED"><data key="label">CONNECTED</data></edge>
+<edge id="e6" source="n3" target="n20" label="CONNECTED"><data key="label">CONNECTED</data><data key="causal">false</data></edge>
+<edge id="e7" source="n3" target="n18" label="CONNECTED"><data key="label">CONNECTED</data></edge>
+<edge id="e8" source="n4" target="n3" label="CONNECTED"><data key="label">CONNECTED</data><data key="causal">false</data></edge>
+<edge id="e9" source="n4" target="n18" label="CONNECTED"><data key="label">CONNECTED</data></edge>
+<edge id="e10" source="n5" target="n21" label="CONNECTED"><data key="label">CONNECTED</data><data key="causal">true</data></edge>
+<edge id="e11" source="n5" target="n19" label="CONNECTED"><data key="label">CONNECTED</data></edge>
+<edge id="e12" source="n6" target="n0" label="CONNECTED"><data key="label">CONNECTED</data><data key="causal">true</data></edge>
+<edge id="e13" source="n6" target="n19" label="CONNECTED"><data key="label">CONNECTED</data></edge>
+<edge id="e14" source="n22" target="n18" label="CONNECTED"><data key="label">CONNECTED</data></edge>
+<edge id="e15" source="n22" target="n7" label="CONNECTED"><data key="label">CONNECTED</data><data key="causal">true</data></edge>
+<edge id="e16" source="n7" target="n18" label="CONNECTED"><data key="label">CONNECTED</data></edge>
+<edge id="e17" source="n8" target="n18" label="CONNECTED"><data key="label">CONNECTED</data></edge>
+<edge id="e18" source="n9" target="n19" label="CONNECTED"><data key="label">CONNECTED</data></edge>
+<edge id="e19" source="n8" target="n7" label="GC"><data key="label">GC</data><data key="causal">true</data></edge>
+<edge id="e20" source="n8" target="n22" label="GC"><data key="label">GC</data><data key="causal">true</data></edge>
+<edge id="e21" source="n8" target="n3" label="GC"><data key="label">GC</data><data key="causal">true</data></edge>
+<edge id="e22" source="n8" target="n1" label="GC"><data key="label">GC</data><data key="causal">true</data></edge>
+<edge id="e23" source="n8" target="n0" label="GC"><data key="label">GC</data><data key="causal">true</data></edge>
+<edge id="e24" source="n8" target="n23" label="GC"><data key="label">GC</data><data key="causal">true</data></edge>
+<edge id="e25" source="n8" target="n21" label="GC"><data key="label">GC</data><data key="causal">true</data></edge>
+<edge id="e26" source="n18" target="n17" label="CONNECTED"><data key="label">CONNECTED</data></edge>
+<edge id="e27" source="n19" target="n17" label="CONNECTED"><data key="label">CONNECTED</data></edge>
+<edge id="e28" source="n20" target="n19" label="CONNECTED"><data key="label">CONNECTED</data></edge>
+<edge id="e29" source="n21" target="n20" label="CONNECTED"><data key="label">CONNECTED</data><data key="causal">false</data></edge>
+<edge id="e30" source="n21" target="n22" label="CONNECTED"><data key="label">CONNECTED</data><data key="causal">true</data></edge>
+<edge id="e31" source="n21" target="n18" label="CONNECTED"><data key="label">CONNECTED</data></edge>
+<edge id="e32" source="n23" target="n18" label="CONNECTED"><data key="label">CONNECTED</data></edge>
+<edge id="e33" source="n7" target="n22" label="GC"><data key="label">GC</data><data key="causal">true</data></edge>
+<edge id="e34" source="n7" target="n4" label="GC"><data key="label">GC</data><data key="causal">true</data></edge>
+<edge id="e35" source="n7" target="n3" label="GC"><data key="label">GC</data><data key="causal">true</data></edge>
+<edge id="e36" source="n7" target="n1" label="GC"><data key="label">GC</data><data key="causal">true</data></edge>
+<edge id="e37" source="n7" target="n0" label="GC"><data key="label">GC</data><data key="causal">true</data></edge>
+<edge id="e38" source="n7" target="n21" label="GC"><data key="label">GC</data><data key="causal">true</data></edge>
+<edge id="e39" source="n22" target="n4" label="GC"><data key="label">GC</data><data key="causal">true</data></edge>
+<edge id="e40" source="n22" target="n1" label="GC"><data key="label">GC</data><data key="causal">true</data></edge>
+<edge id="e41" source="n22" target="n0" label="GC"><data key="label">GC</data><data key="causal">true</data></edge>
+<edge id="e42" source="n22" target="n21" label="GC"><data key="label">GC</data><data key="causal">true</data></edge>
+<edge id="e43" source="n4" target="n1" label="GC"><data key="label">GC</data><data key="causal">true</data></edge>
+<edge id="e44" source="n4" target="n0" label="GC"><data key="label">GC</data><data key="causal">true</data></edge>
+<edge id="e45" source="n4" target="n21" label="GC"><data key="label">GC</data><data key="causal">true</data></edge>
+<edge id="e46" source="n3" target="n1" label="GC"><data key="label">GC</data><data key="causal">true</data></edge>
+<edge id="e47" source="n3" target="n23" label="GC"><data key="label">GC</data><data key="causal">true</data></edge>
+<edge id="e48" source="n3" target="n21" label="GC"><data key="label">GC</data><data key="causal">true</data></edge>
+<edge id="e49" source="n1" target="n0" label="GC"><data key="label">GC</data><data key="causal">true</data></edge>
+<edge id="e50" source="n1" target="n23" label="GC"><data key="label">GC</data><data key="causal">true</data></edge>
+<edge id="e51" source="n1" target="n21" label="GC"><data key="label">GC</data><data key="causal">true</data></edge>
+<edge id="e52" source="n0" target="n21" label="GC"><data key="label">GC</data><data key="causal">true</data></edge>
+<edge id="e53" source="n9" target="n6" label="GC"><data key="label">GC</data><data key="causal">true</data></edge>
+<edge id="e54" source="n9" target="n5" label="GC"><data key="label">GC</data><data key="causal">true</data></edge>
+<edge id="e55" source="n9" target="n2" label="GC"><data key="label">GC</data><data key="causal">true</data></edge>
+<edge id="e56" source="n6" target="n5" label="GC"><data key="label">GC</data><data key="causal">true</data></edge>
+<edge id="e57" source="n6" target="n2" label="GC"><data key="label">GC</data><data key="causal">true</data></edge>
+<edge id="e58" source="n6" target="n20" label="GC"><data key="label">GC</data><data key="causal">true</data></edge>
+<edge id="e59" source="n5" target="n2" label="GC"><data key="label">GC</data><data key="causal">true</data></edge>
+<edge id="e60" source="n5" target="n20" label="GC"><data key="label">GC</data><data key="causal">true</data></edge>
+<edge id="e61" source="n2" target="n20" label="GC"><data key="label">GC</data><data key="causal">true</data></edge>
+</graph>
+</graphml>
