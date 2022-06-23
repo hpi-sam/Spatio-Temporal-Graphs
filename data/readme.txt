@@ -9,5 +9,5 @@ Data Sources (Data Generation Processess):
 Detail about Loadtest.csv (Updated) file: 
 Total Data Samples:812
 Nodes/service (Column): 14
-Training Sample= '10/14/2021' , '10/19/2021' and '10/20/2021'
+Training Sample= '10/14/2021' , '10/19/2021' , '10/20/2021', and '1/1/2021
 Testing Sample= '2/17/2022' and '3/2/2022'
