@@ -40,7 +40,7 @@ def _has_received_propagation(subgraph, node):
 # in-place modification
 def add_timesteps_to_graph(subgraph, start_node, random_seed=42):
     np.random.seed(random_seed)
-    timestep = 1
+    timestep = 0
     edge_pool = {edge:1 for edge in list(subgraph.out_edges(start_node))}
 
     while edge_pool:
