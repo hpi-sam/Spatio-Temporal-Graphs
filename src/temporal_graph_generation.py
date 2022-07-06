@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 import networkx as nx
 from datetime import datetime, timedelta
 
@@ -111,3 +112,20 @@ def sample_subgraph_with_timestamp_constraint(super_graph, start_node: str, star
         if len(subgraph.nodes())>=max_nodes:
             return subgraph
     return subgraph
+
+def get_complete_teneto_edgelist(graph):
+    add_edges = []
+
+    edge_df = nx.to_pandas_edgelist(graph)
+    edge_df.columns = ['i','j','t']
+    edge_df = edge_df.apply(pd.to_numeric)
+
+    max_time = np.max(edge_df['t'])
+    for i in edge_df.index:
+        row = edge_df.iloc[i]
+        times_to_add = np.arange(row["t"], max_time+1)
+        for t_to_add in times_to_add:
+            add_edges.append([row["i"], row["j"], t_to_add])
+    
+    fill_edges = pd.DataFrame(add_edges, columns=edge_df.columns)
+    return fill_edges

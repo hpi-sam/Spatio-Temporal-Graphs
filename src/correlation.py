@@ -1,4 +1,5 @@
 import argparse
+from http.client import GATEWAY_TIMEOUT
 from typing import List
 import networkx
 import pandas as pd
@@ -18,6 +19,60 @@ def encode_graphs(graphs: List[networkx.Graph]) -> np.ndarray:
             numbers.append(edge[1])
         numbers.append(graph_seperator)
     return np.array(numbers, dtype=np.uint8)
+
+def encode_temporal_graphs(graphs: List[networkx.Graph]) -> np.ndarray:
+    """
+    Encodes a list of graphs into a array.
+    """
+    graph_seperator = 255
+    edge_separator = 254
+    numbers = []
+    for graph in graphs:
+        for edge in networkx.to_edgelist(graph):
+            numbers.append(edge[0])
+            numbers.append(edge[1])
+            numbers.append(edge[2]['timestep'])
+            numbers.append(edge_separator)
+        numbers.append(graph_seperator)
+    return np.array(numbers, dtype=np.uint8)
+
+def decode_temporal_graphs(encoded_graphs: np.ndarray) -> List[networkx.Graph]:
+    """
+    Decodes a list of graphs from a array.
+    """
+    graph_seperator = 255
+    edge_separator=254
+    graphs = []
+    current_graph = networkx.DiGraph()
+    edge_start = None
+    edge_end = None
+    edge_timestep = None
+    for number in encoded_graphs:
+        if number == graph_seperator:
+            if edge_start is not None or edge_end is not None or edge_timestep is not None:
+                raise ValueError("Invalid encoded graph")
+            graphs.append(current_graph)
+            current_graph = networkx.DiGraph()
+        else:
+            if edge_start is None:
+                edge_start = number
+                continue
+            if edge_end is None:
+                edge_end = number
+                continue
+            if edge_timestep is None:
+                edge_timestep = number
+                continue
+            if number == edge_separator:
+                if edge_start is None or edge_end is None or edge_timestep is None:
+                    raise ValueError("Invalid encoded graph")
+                current_graph.add_edge(edge_start, edge_end, timestep=edge_timestep)
+                edge_start = None
+                edge_end = None
+                edge_timestep = None
+                continue
+            raise ValueError("Invalid encoded graph")
+    return graphs
 
 def decode_graphs(encoded_graphs: np.ndarray) -> List[networkx.Graph]:
     """
