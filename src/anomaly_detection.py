@@ -12,11 +12,11 @@ def detect_anomalies(df, graph, anomaly_dates, calibration_dates):
     all_calibration_data = df[df['Date'].isin(calibration_dates)]
 
     csv_nodes = df.columns.drop(['Date', 'Time', 'Unnamed: 0'])
-    print("Node names from data csv: ", sorted(csv_nodes))
+    #print("Node names from data csv: ", sorted(csv_nodes))
     graph_nodes = [node[1]['id'] for node in graph.nodes.data()]
-    print("Node names from graph: ", sorted(graph_nodes))
-    print("Nodes in graph but not in data csv: ", sorted(set(graph_nodes) - set(csv_nodes)))
-    print("Nodes in data csv but not in graph: ", sorted(set(csv_nodes) - set(graph_nodes)))
+    #print("Node names from graph: ", sorted(graph_nodes))
+    #print("Nodes in graph but not in data csv: ", sorted(set(graph_nodes) - set(csv_nodes)))
+    #print("Nodes in data csv but not in graph: ", sorted(set(csv_nodes) - set(graph_nodes)))
     for node_name in csv_nodes:
         calibration_data_for_node = all_calibration_data[node_name].to_numpy()
         anomaly_data_for_node = all_anomaly_data[node_name].to_numpy()
