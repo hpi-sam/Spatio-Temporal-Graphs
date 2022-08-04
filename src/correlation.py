@@ -3,12 +3,10 @@ import gzip
 import random
 import warnings
 from typing import List
-
 import networkx
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
-
 
 def encode_graphs(graphs: List[networkx.Graph], node_order: List[str]) -> np.ndarray:
     """
@@ -72,7 +70,7 @@ def make_temporal(graph: networkx.DiGraph, node_order: List[str]) -> np.array:
         new_node = new_edge[1]
         all_edges.append(new_edge)
         included.append(new_node)
-        new_subgraph = networkx.Graph()
+        new_subgraph = networkx.DiGraph()
         new_subgraph.add_nodes_from(range(len(node_order)))
         new_subgraph.add_edges_from(all_edges)
         time_steps.append(new_subgraph)
@@ -80,7 +78,7 @@ def make_temporal(graph: networkx.DiGraph, node_order: List[str]) -> np.array:
     if len(time_steps) != 0:
         time_steps.extend([time_steps[-1]]*(len(node_order) - len(time_steps) - 1))
     else:
-        new_subgraph = networkx.Graph()
+        new_subgraph = networkx.DiGraph()
         new_subgraph.add_nodes_from(range(len(node_order)))
         time_steps = [new_subgraph] * (len(node_order) - 1)
     arrays = list(map(lambda x: networkx.to_numpy_array(x), time_steps))
@@ -137,7 +135,7 @@ def main():
             np.random.shuffle(previous_random_neighbors)
         graphs.append(new_graph)
     if args.temporal:
-        temporal_graphs = map(lambda x: make_temporal(x, node_order), graphs)
+        temporal_graphs = map(lambda x: make_temporal(x, node_order), tqdm(graphs))
         np.savez_compressed(args.output, *temporal_graphs)
     else:
         encoded_graphs = encode_graphs(graphs, node_order)
