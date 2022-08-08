@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import networkx as nx
+from tqdm import tqdm
 from datetime import datetime, timedelta
 import networkx.algorithms.isomorphism as iso
 
@@ -114,18 +115,18 @@ def sample_subgraph_with_timestamp_constraint(super_graph, start_node: str, star
             return subgraph
     return subgraph
 
+
 def sample_temporal_subgraphs(super_graph, start_node, max_nodes=None, seed=np.random.seed(111), num_sub_seeds=1000):
     if not max_nodes:
         max_nodes = len(super_graph.nodes()) + 1
     tn_subgraphs = []
-    em = iso.numerical_edge_match("timestep", 0)
-    for seed in np.random.choice(10000000, num_sub_seeds):
+    for seed in tqdm(np.random.choice(10000000, num_sub_seeds)):
         for max_nodes_no in range(2, max_nodes):
             for bfs_prob in [0.1, 0.5, 0.9]:
                 tn_subgraph = sample_subgraph(super_graph, start_node, max_nodes=max_nodes_no, bfs_prob=bfs_prob, random_seed=seed)
                 add_timesteps_to_graph(tn_subgraph, start_node, random_seed=seed)
                 if tn_subgraphs:
-                    if not np.any([nx.is_isomorphic(tn_subgraph, s, edge_match=em) for s in tn_subgraphs]):
+                    if not np.any([nx.utils.graphs_equal(tn_subgraph, s) for s in tn_subgraphs]):
                         tn_subgraphs.append(tn_subgraph)
                 else:
                     tn_subgraphs.append(tn_subgraph)
