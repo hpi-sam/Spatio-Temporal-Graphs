@@ -18,17 +18,7 @@ import torch.utils.data
 from torch.utils.data import DataLoader
 from torchviz import make_dot
 
-def save_model_graph(generator, discriminator, outdir="."):
-    return
-    x = torch.normal(0, 1, size=(1,1))
-    y_hat = generator(x)
-    make_dot(y_hat, params=dict(list(generator.named_parameters()))).render(Path(outdir) / "generator_arch", format="png")
-    y_hat = discriminator(y_hat.detach())
-    make_dot(y_hat, params=dict(list(discriminator.named_parameters()))).render(Path(outdir) / "discriminator_arch", format="png")
-    y_hat = discriminator(generator(x))
-    make_dot(y_hat, params=dict(list(generator.named_parameters()) + list(discriminator.named_parameters()))).render(Path(outdir) / "complete_arch", format="png")
-
-class GraphGenGanGenerator(torch.nn.Module):
+class GraphGenLSTMGenerator(torch.nn.Module):
     def __init__(self, num_nodes: int, activation=torch.nn.PReLU, layers=None):
         super().__init__()
         self.num_nodes = num_nodes
@@ -53,7 +43,7 @@ class GraphGenGanGenerator(torch.nn.Module):
             input = torch.concat((pred, noise), dim=1)
         return torch.concat(out, dim=-1)
 
-class GraphGenGanDescriminator(torch.nn.Module):
+class GraphGenLSTMDescriminator(torch.nn.Module):
     def __init__(self, num_nodes: int, temporal: int=0, activation=torch.nn.Tanh, layers=None):
         super().__init__()
         self.layers = torch.nn.Sequential()
@@ -87,9 +77,11 @@ def load_graphs(dataset) -> torch.utils.data.DataLoader:
     loaded = np.load(dataset)
     return [torch.tensor(graph) for graph in loaded.values()]
 
-def trainGraphGenTemporalOneShot():
-    outdir = Path("./output") / "LSTMAutoregressive" / datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-    dataset = "100k_frontend_graphs-temporal.npz"
+def trainGraphGenTemporalOneShot(
+    dataset="../generated/100k_frontend_graphs-temporal_unique.npy",
+    outdir=Path("./output") / "LSTMAutoregressive"
+):
+    outdir = Path(outdir) / datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
     os.makedirs(outdir, exist_ok=False)
     num_nodes = 17
     time_steps = 16
@@ -99,8 +91,8 @@ def trainGraphGenTemporalOneShot():
     step = 0
     clip=True
     clip_value=1.0
-    discriminator = GraphGenGanDescriminator(num_nodes, activation=torch.nn.Tanh, temporal=num_nodes-1, layers=[128])
-    generator = GraphGenGanGenerator(num_nodes, activation=torch.nn.Tanh, layers=[128])
+    discriminator = GraphGenLSTMDescriminator(num_nodes, activation=torch.nn.Tanh, temporal=num_nodes-1, layers=[128])
+    generator = GraphGenLSTMGenerator(num_nodes, activation=torch.nn.Tanh, layers=[128])
     best_g_loss = inf
     # save_temporal_graph(generator, discriminator, outdir)
     print(generator)
@@ -226,8 +218,8 @@ def laod_and_test(dir):
     eval_dir = dir/"eval"
     os.makedirs(eval_dir, exist_ok=True)
     num_nodes = 17
-    discriminator = GraphGenGanDescriminator(num_nodes, activation=torch.nn.Tanh, temporal=num_nodes-1, layers=[128])
-    generator = GraphGenGanGenerator(num_nodes, activation=torch.nn.Tanh, layers=[128])
+    discriminator = GraphGenLSTMDescriminator(num_nodes, activation=torch.nn.Tanh, temporal=num_nodes-1, layers=[128])
+    generator = GraphGenLSTMGenerator(num_nodes, activation=torch.nn.Tanh, layers=[128])
     discriminator.load_state_dict(torch.load(dir/"best-discriminator.ph"))
     generator.load_state_dict(torch.load(dir/"best-generator.ph"))
     save_temporal_graph(generator, discriminator, eval_dir)

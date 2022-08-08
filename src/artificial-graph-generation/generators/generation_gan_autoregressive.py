@@ -76,9 +76,11 @@ def load_graphs(dataset) -> torch.utils.data.DataLoader:
     loaded = np.load(dataset)
     return [torch.tensor(graph) for graph in loaded.values()]
 
-def trainGraphGenTemporalOneShot():
-    outdir = Path("./output") / "GANAutoregressive" / datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-    dataset = "100k_frontend_graphs-temporal.npz"
+def trainGraphGenTemporalOneShot(
+    dataset="../generated/100k_frontend_graphs-temporal.npz",
+    outdir=Path("./output") / "GANAutoregressive"
+):
+    outdir = Path(outdir) / datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
     os.makedirs(outdir, exist_ok=False)
     num_nodes = 17
     time_steps = 16
