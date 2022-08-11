@@ -38,16 +38,17 @@ from sklearn.metrics import ndcg_score
 from scipy.stats import kendalltau
 from sklearn.neighbors import NearestNeighbors
 from tqdm import tqdm
+import gzip
 
 # %%
-source_indices = np.random.default_rng().choice(num_sources, 100, replace=False)
+#source_indices = np.random.default_rng().choice(num_sources, 100, replace=False)
 source_indices = list(range(num_sources))
 
 # %%
 # Temporal closeness
 temporal_closeness_distances = []
 temporal_closeness_rankings = []
-for i in tqdm(source_indices):
+for i in tqdm(source_indices, desc="Temporal Closeness"):
     temporal_closeness_distances.append([])
     for j in range(num_targets):
         temporal_closeness_distances[-1].append(distance.euclidean(temporal_closeness_vectors_sources[i], temporal_closeness_vectors_targets[j]))
@@ -56,17 +57,18 @@ for i in tqdm(source_indices):
     for index in range(num_targets):
         result[argsorted[index]] = index
     temporal_closeness_rankings.append(result)
-temporal_closeness_distances = np.array(temporal_closeness_distances)
-temporal_closeness_rankings = np.array(temporal_closeness_rankings)
-np.save("temporal_closeness_distances.npy", temporal_closeness_distances)
-np.save("temporal_closeness_rankings.npy", temporal_closeness_rankings)
+temporal_closeness_distances = np.array(temporal_closeness_distances, dtype=np.float32)
+temporal_closeness_rankings = np.array(temporal_closeness_rankings, dtype=np.int32)
+with gzip.open("temporal_closeness_distances.npy", "wb") as filehandle:
+    np.save(filehandle, temporal_closeness_distances)
+with gzip.open("temporal_closeness_rankings.npy", "wb") as filehandle:
+    np.save(filehandle, temporal_closeness_rankings)
 
 # %%
-
 # Temporal degree
 temporal_degree_distances = []
 temporal_degree_rankings = []
-for i in tqdm(source_indices):
+for i in tqdm(source_indices, desc="Temporal Degree"):
     temporal_degree_distances.append([])
     for j in range(num_targets):
         temporal_degree_distances[-1].append(distance.euclidean(temporal_degree_vectors_sources[i], temporal_degree_vectors_targets[j]))
@@ -75,15 +77,17 @@ for i in tqdm(source_indices):
     for index in range(num_targets):
         result[argsorted[index]] = index
     temporal_degree_rankings.append(result)
-temporal_degree_distances = np.array(temporal_degree_distances)
-temporal_degree_rankings = np.array(temporal_degree_rankings)
-np.save("temporal_degree_distances.npy", temporal_degree_distances)
-np.save("temporal_degree_rankings.npy", temporal_degree_rankings)
+temporal_degree_distances = np.array(temporal_degree_distances, dtype=np.float32)
+temporal_degree_rankings = np.array(temporal_degree_rankings, dtype=np.int32)
+with gzip.open("temporal_degree_distances.npy", "wb") as filehandle:
+    np.save(filehandle, temporal_degree_distances)
+with gzip.open("temporal_degree_rankings.npy", "wb") as filehandle:
+    np.save(filehandle, temporal_degree_rankings)
 
 # %%
 temporal_betweenness_distances = []
 temporal_betweenness_rankings = []
-for i in tqdm(source_indices):
+for i in tqdm(source_indices, desc="Temporal Betweenness"):
     temporal_betweenness_distances.append([])
     for j in range(num_targets):
         temporal_betweenness_distances[-1].append(distance.euclidean(temporal_betweenness_vectors_sources[i], temporal_betweenness_vectors_targets[j]))
@@ -92,10 +96,12 @@ for i in tqdm(source_indices):
     for index in range(num_targets):
         result[argsorted[index]] = index
     temporal_betweenness_rankings.append(result)
-temporal_betweenness_distances = np.array(temporal_betweenness_distances)
-temporal_betweenness_rankings = np.array(temporal_betweenness_rankings)
-np.save("temporal_betweenness_distances.npy", temporal_betweenness_distances)
-np.save("temporal_betweenness_rankings.npy", temporal_betweenness_rankings)
+temporal_betweenness_distances = np.array(temporal_betweenness_distances, dtype=np.float32)
+temporal_betweenness_rankings = np.array(temporal_betweenness_rankings, dtype=np.int32)
+with gzip.open("temporal_betweenness_distances.npy", "wb") as filehandle:
+    np.save(filehandle, temporal_betweenness_distances)
+with gzip.open("temporal_betweenness_rankings.npy", "wb") as filehandle:
+    np.save(filehandle, temporal_betweenness_rankings)
 
 # %%
 # Embeddings
@@ -110,5 +116,9 @@ for i in tqdm(source_indices):
     for index in range(num_targets):
         result[argsorted[index]] = index
     embedding_rankings.append(result)
-np.save("embedding_distances.npy", embedding_distances)
-np.save("embedding_rankings.npy", embedding_rankings)
+embedding_distances = np.array(embedding_distances, dtype=np.float32)
+embedding_rankings = np.array(embedding_rankings, dtype=np.int32)
+with gzip.open("embedding_distances.npy", "wb") as filehandle:
+    np.save(filehandle, embedding_distances)
+with gzip.open("embedding_rankings.npy", "wb") as filehandle:
+    np.save(filehandle, embedding_rankings)
