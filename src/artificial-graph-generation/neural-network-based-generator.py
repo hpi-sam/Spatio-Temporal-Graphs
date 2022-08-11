@@ -63,8 +63,11 @@ def trainGraphGenTemporalOneShot(
         "d_loss": [],
     }
     mean_differences = []
+    tbs = []
+    tds = []
+    tcs = []
     while step <= epochs:
-        bar = tqdm(loader, desc=f"[{step}/{epochs}]")
+        bar = tqdm(loader, desc=f"[{step}/{epochs}] train")
         for graph_batch in bar:
             # Train discriminator
             discriminator.train()
@@ -102,28 +105,42 @@ def trainGraphGenTemporalOneShot(
                 torch.save(generator.state_dict(), outdir/"best-loss-generator.ph")
                 torch.save(discriminator.state_dict(), outdir/"best-loss-discriminator.ph")
         # Evaluate
-        with torch.no_grad():
-            random_data = torch.normal(0, 1, size=(evaluate_size, 1), device=device)
-            generated = generator(random_data) > 0.5
-            generated = generated.reshape(-1, num_nodes, num_nodes, time_steps).cpu()
-            measures = []
-            tb, tc, td = get_temporal_metrics(generated)
-            tbdiff, tcdiff, tddiff = dataset_tb - tb, dataset_tc - tc, dataset_td - td
-            print(tbdiff, tcdiff, tddiff)
-            diffsum = abs(tbdiff) + abs(tcdiff) + abs(tddiff)
-            mean_differences.append(diffsum.sum())
-        if diffsum.sum() == min(map(sum, map(abs, mean_differences))):
-            torch.save(generator.state_dict(), outdir/"best-generator.ph")
-            torch.save(discriminator.state_dict(), outdir/"best-discriminator.ph")
+        if step % 20 == 0: 
+            with torch.no_grad():
+                random_data = torch.normal(0, 1, size=(10, 1), device=device)
+                generated = generator(random_data) > 0.5
+                generated = generated.reshape(-1, num_nodes, num_nodes, time_steps).cpu()
+                tb, tc, td = get_temporal_metrics(generated)
+                tbs.append({nodes[i]: tb[i] for i in range(len(nodes))})
+                tcs.append({nodes[i]: tc[i] for i in range(len(nodes))})
+                tds.append({nodes[i]: td[i] for i in range(len(nodes))})
+                tbdiff, tcdiff, tddiff = dataset_tb - tb, dataset_tc - tc, dataset_td - td
+                print(tbdiff, tcdiff, tddiff)
+                diffsum = abs(tbdiff) + abs(tcdiff) + abs(tddiff)
+                mean_differences.append(diffsum.sum())
+            if diffsum.sum() == min( mean_differences):
+                torch.save(generator.state_dict(), outdir/"best-generator.ph")
+                torch.save(discriminator.state_dict(), outdir/"best-discriminator.ph")
+            tbdf = pandas.DataFrame.from_records(tbs, columns=nodes)
+            tcdf = pandas.DataFrame.from_records(tcs, columns=nodes)
+            tddf = pandas.DataFrame.from_records(tds, columns=nodes)
+            tbdf.to_csv(outdir/"temporal-betweenesses.csv")
+            tcdf.to_csv(outdir/"temporal-clonsesses.csv")
+            tddf.to_csv(outdir/"temporal-degrees.csv")
+            
+            tbdf.plot(title="Temporal Betweeness over Time",xlabel="step", ylabel="difference")
+            plt.savefig(outdir/"temporal-betweeness-differences.png")
+            plt.close()
+            tcdf.plot(title="Temporal Closeness over Time",xlabel="step", ylabel="difference")
+            plt.savefig(outdir/"temporal-closeness-differences.png")
+            plt.close()
+            tddf.plot(title="Temporal Degree over Time",xlabel="step", ylabel="difference")
+            plt.savefig(outdir/"temporal-degree-differences.png")
+            plt.close()
         df = pandas.DataFrame.from_dict(log)
         df.to_csv(outdir/"log.csv")
-        df.plot(xlabel="step", ylabel="value", title=f"Autoregressive GAN Graph Generation")
+        df.plot(xlabel="step", ylabel="value", title=f"Loss over time")
         plt.savefig(outdir/"log.png")
-        plt.close()
-        df2 = pandas.DataFrame.from_records(mean_differences, columns=nodes)
-        df2.to_csv(outdir/"tdegree-differences.csv")
-        df2.plot(xlabel="step", ylabel="difference", title=f"Autoregressive GAN Graph Generation - TDegree Difference")
-        plt.savefig(outdir/"tdegree-differences.png")
         plt.close()
         torch.save(generator.state_dict(), outdir/"latest-generator.ph")
         torch.save(discriminator.state_dict(), outdir/"latest-discriminator.ph")
@@ -179,19 +196,19 @@ def main():
         "clip": True,
         "clip_value": 1.0
     }
-    trainGraphGenTemporalOneShot(
-        cfg,
-        "generated/100k_frontend_graphs_temporal_unique.npy",
-        Path("./output") / "GANAutoregressive",
-        GraphGenGanDescriminator(num_nodes, num_nodes-1, torch.nn.Tanh, [128]),
-        GraphGenGanGenerator(num_nodes, torch.nn.Tanh, [128]),
-    )
+    # trainGraphGenTemporalOneShot(
+    #     cfg,
+    #     "generated/100k_frontend_graphs_temporal_unique.npy",
+    #     Path("./output") / "GANAutoregressive",
+    #     GraphGenGanDescriminator(num_nodes, num_nodes-1, torch.nn.Tanh, [128]),
+    #     GraphGenGanGenerator(num_nodes, torch.nn.Tanh, [128]),
+    # )
     trainGraphGenTemporalOneShot(
         cfg,
         "generated/100k_frontend_graphs_temporal_unique.npy",
         Path("./output") / "LinearOneShot",
         GraphGenLinearDescriminator(num_nodes, num_nodes-1, torch.nn.Tanh, [128]),
-        GraphGenLinearGenerator(num_nodes, torch.nn.Tanh, [128]),
+        GraphGenLinearGenerator(num_nodes, num_nodes-1, torch.nn.Tanh, [128]),
     )
     trainGraphGenTemporalOneShot(
         cfg,
