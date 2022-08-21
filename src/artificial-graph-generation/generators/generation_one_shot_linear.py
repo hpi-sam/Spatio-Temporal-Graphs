@@ -1,6 +1,5 @@
 import torch
 import torch.utils.data
-from utils import decode_graphs
 
 class GraphGenLinearGenerator(torch.nn.Module):
     def __init__(self, num_nodes: int, temporal: int=0, activation=torch.nn.PReLU, layers=None):
